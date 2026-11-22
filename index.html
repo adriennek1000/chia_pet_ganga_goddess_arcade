@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chia Pet: Ganga Goddess - Retro Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --chia-black: #141210;
+      --chia-gold: #e69d24;
+      --chia-gold-bright: #ffbe3b;
+      --chia-magenta: #a82b6e;
+      --chia-parchment: #e9dec8;
+      --chia-parchment-dark: #d7c7a9;
+      --chia-terracotta: #a34d28;
+      --chia-green: #3ca335;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1c1917;
+      background-image: radial-gradient(#2c2622 1px, transparent 1px);
+      background-size: 20px 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--chia-black);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Classic Chia Pet Packaging Container */
+    .chia-box {
+      background-color: var(--chia-parchment);
+      background-image: 
+        radial-gradient(rgba(139, 115, 85, 0.14) 1px, transparent 0),
+        radial-gradient(rgba(163, 77, 40, 0.08) 1px, transparent 0);
+      background-size: 16px 16px;
+      background-position: 0 0, 8px 8px;
+      border: 6px solid var(--chia-black);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 0 40px rgba(139, 110, 72, 0.25);
+    }
+
+    .font-chia-logo {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.02em;
+      text-shadow: 3px 3px 0px #000000;
+    }
+
+    .font-arcade {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    /* Retro Scanline Overlay */
+    .scanlines {
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.14) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    /* Custom Arcade Buttons */
+    .arcade-btn {
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+      border: 3px solid var(--chia-black);
+      box-shadow: 0 4px 0 var(--chia-black);
+    }
+    .arcade-btn:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 0 var(--chia-black);
+    }
+    .arcade-btn:active, .arcade-btn.active-tool {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--chia-black);
+    }
+    .arcade-btn.active-tool {
+      outline: 3px solid #ffbe3b;
+      background-color: #141210 !important;
+      color: #ffbe3b !important;
+    }
+
+    /* Speech Bubble Animation */
+    @keyframes floatPop {
+      0% { transform: scale(0.7) translateY(8px); opacity: 0; }
+      15% { transform: scale(1.05) translateY(0px); opacity: 1; }
+      85% { transform: scale(1) translateY(-2px); opacity: 1; }
+      100% { transform: scale(0.9) translateY(-8px); opacity: 0; }
+    }
+    .speech-bubble-anim {
+      animation: floatPop 3.6s ease-in-out forwards;
+    }
+
+    @keyframes pulseSmooch {
+      0%, 100% { transform: scale(1) rotate(-2deg); }
+      50% { transform: scale(1.08) rotate(2deg); }
+    }
+    .smooch-pulse {
+      animation: pulseSmooch 0.35s infinite ease-in-out;
+    }
+
+    /* Meter striped fill */
+    .meter-fill {
+      transition: width 0.12s linear, background-color 0.2s ease;
+      background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.18) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.18) 50%,
+        rgba(255, 255, 255, 0.18) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 16px 16px;
+    }
+  </style>
+</head>
+<body class="p-2 sm:p-4">
+
+  <!-- Main Chia Pet Arcade Cabinet / Box Wrapper -->
+  <div class="chia-box w-full max-w-4xl rounded-2xl overflow-hidden flex flex-col relative">
+    
+    <!-- TOP PACKAGING HEADER (Black + Gold Logo + Magenta Stripe) -->
+    <header class="bg-[#141210] text-white px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 relative">
+      <div class="flex items-center gap-3">
+        <!-- Classic Chia Pet Logo Lockup -->
+        <div class="relative inline-flex items-baseline select-none">
+          <span class="font-chia-logo text-3xl sm:text-5xl text-[#e69d24] tracking-tight leading-none">Ch<span class="relative inline-block">i<span class="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#a82b6e]"></span></span>a Pet</span>
+          <span class="text-xs text-[#e69d24] ml-0.5 font-bold">®</span>
+        </div>
+        <div class="border-l-2 border-[#a82b6e] pl-3">
+          <h1 class="font-chia-logo text-xl sm:text-3xl text-white tracking-wide leading-none">GANGA GODDESS</h1>
+          <p class="text-[10px] sm:text-xs text-[#e69d24] font-bold uppercase tracking-wider mt-0.5">The Spiritual Water Goddess Arcade</p>
+        </div>
+      </div>
+
+      <!-- Right Header Controls: Score, High Score & Sound Toggle -->
+      <div class="flex items-center gap-2 sm:gap-4 ml-auto">
+        <div class="bg-[#231f1c] border-2 border-[#e69d24] rounded-xl px-2.5 py-1 text-right">
+          <div class="text-[9px] text-[#e69d24] font-arcade uppercase">Score</div>
+          <div id="hudScore" class="font-arcade text-xs sm:text-sm text-white">000000</div>
+        </div>
+        <div class="bg-[#231f1c] border-2 border-[#a82b6e] rounded-xl px-2.5 py-1 text-right hidden sm:block">
+          <div class="text-[9px] text-[#ff77c2] font-arcade uppercase">High</div>
+          <div id="hudHighScore" class="font-arcade text-xs sm:text-sm text-white">000000</div>
+        </div>
+        <button id="btnSound" title="Toggle Retro Audio" class="arcade-btn bg-[#e69d24] text-[#141210] rounded-xl p-2.5 flex items-center justify-center font-bold text-sm">
+          <span id="soundIcon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SIGNATURE MAGENTA PACKAGING STRIPE -->
+    <div class="h-3 sm:h-4 w-full bg-[#a82b6e] border-y-2 border-[#141210] flex items-center justify-between px-4 overflow-hidden">
+      <span class="text-[9px] font-arcade text-white/90 tracking-widest uppercase truncate">WATCH IT GROW! • FROM THE HOLY WATERS OF THE GANGES</span>
+      <span id="hudWeekBadge" class="text-[9px] font-arcade text-[#ffbe3b] uppercase whitespace-nowrap ml-2">WEEK 1</span>
+    </div>
+
+    <!-- HUD METERS BAR -->
+    <div class="bg-[#dfd1b5] border-b-4 border-[#141210] px-3 py-2 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 items-center">
+      <!-- Growth Progress -->
+      <div class="bg-[#f5eedf] border-2 border-[#141210] rounded-xl p-1.5 shadow-sm">
+        <div class="flex justify-between items-center text-[10px] font-bold uppercase mb-1">
+          <span class="text-[#236b1e]">🌱 Sprout Growth</span>
+          <span id="labelGrowth" class="font-arcade text-[9px]">0%</span>
+        </div>
+        <div class="w-full h-3 bg-[#c9bba0] rounded-full overflow-hidden border border-[#141210]">
+          <div id="barGrowth" class="meter-fill h-full bg-[#3ca335]" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Hydration Meter -->
+      <div class="bg-[#f5eedf] border-2 border-[#141210] rounded-xl p-1.5 shadow-sm">
+        <div class="flex justify-between items-center text-[10px] font-bold uppercase mb-1">
+          <span id="titleHydration" class="text-[#0e6ba8]">💧 Holy Water</span>
+          <span id="labelHydration" class="font-arcade text-[9px]">65%</span>
+        </div>
+        <div class="w-full h-3 bg-[#c9bba0] rounded-full overflow-hidden border border-[#141210] relative">
+          <!-- Optimal Zone Marker -->
+          <div class="absolute top-0 bottom-0 left-[35%] right-[18%] bg-sky-300/40 border-x border-sky-700/50 pointer-events-none"></div>
+          <div id="barHydration" class="meter-fill h-full bg-[#1d9bf0]" style="width: 65%"></div>
+        </div>
+      </div>
+
+      <!-- Health / Vitality Meter -->
+      <div class="bg-[#f5eedf] border-2 border-[#141210] rounded-xl p-1.5 shadow-sm">
+        <div class="flex justify-between items-center text-[10px] font-bold uppercase mb-1">
+          <span class="text-[#a82b6e]">❤️ Chia Vitality</span>
+          <span id="labelHealth" class="font-arcade text-[9px]">100%</span>
+        </div>
+        <div class="w-full h-3 bg-[#c9bba0] rounded-full overflow-hidden border border-[#141210]">
+          <div id="barHealth" class="meter-fill h-full bg-[#d9387a]" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Sun Lamp & Combo Status -->
+      <div class="bg-[#f5eedf] border-2 border-[#141210] rounded-xl p-1.5 shadow-sm flex items-center justify-between">
+        <div>
+          <div class="text-[9px] font-bold uppercase text-amber-800">☀️ Sun Lamp</div>
+          <div id="labelSunStatus" class="font-arcade text-[9px] text-amber-600 mt-0.5">OFF</div>
+        </div>
+        <div class="text-right">
+          <div class="text-[9px] font-bold uppercase text-purple-900">🔥 Combo</div>
+          <div id="labelCombo" class="font-arcade text-xs text-[#a82b6e]">x1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GAMEPLAY ARENA (Canvas + Packaging Callouts + Overlays) -->
+    <div id="canvasWrapper" class="relative w-full h-[380px] sm:h-[440px] bg-gradient-to-b from-[#ede2cc] via-[#e4d5b7] to-[#cbb794] overflow-hidden cursor-crosshair">
+      
+      <!-- Decorative Packaging Stamp on Left -->
+      <div class="hidden md:flex flex-col items-center justify-center absolute left-4 top-6 w-28 h-28 rounded-full bg-[#a82b6e] border-2 border-[#141210] text-center p-2 text-white shadow-md pointer-events-none opacity-90 -rotate-6">
+        <span class="text-[10px] font-bold leading-tight">From the<br><strong class="text-[#ffbe3b] text-xs">HOLY WATERS</strong><br>of the<br><strong class="text-xs">GANGES</strong></span>
+        <svg class="w-14 h-3 mt-1 text-[#ffbe3b]" viewBox="0 0 60 12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 6 Q 10 1, 18 6 T 34 6 T 50 6 T 58 6" />
+          <path d="M2 10 Q 10 5, 18 10 T 34 10 T 50 10 T 58 10" />
+        </svg>
+      </div>
+
+      <!-- Packaging Tagline Bottom Left -->
+      <div class="hidden sm:block absolute left-4 bottom-3 pointer-events-none opacity-85">
+        <p class="font-chia-logo text-lg text-[#141210] leading-none">EASY TO DO...</p>
+        <p class="font-chia-logo text-lg text-[#141210] leading-none">FUN TO GROW!</p>
+      </div>
+
+      <!-- Speech Bubble Container (Top Right of Figurine) -->
+      <div id="speechBubble" class="hidden absolute right-3 sm:right-8 top-4 sm:top-7 max-w-[190px] sm:max-w-[230px] bg-white border-3 border-[#141210] rounded-2xl p-2.5 sm:p-3 shadow-[4px_4px_0px_#141210] pointer-events-none z-10">
+        <p id="speechText" class="text-xs sm:text-sm font-bold text-[#141210] italic leading-snug text-center">
+          “come here king give me a big smoooch”
+        </p>
+        <!-- Speech Bubble Tail -->
+        <div class="absolute -bottom-2.5 left-6 w-4 h-4 bg-white border-r-3 border-b-3 border-[#141210] rotate-45"></div>
+      </div>
+
+      <!-- SMOOCH BONUS OVERLAY PROMPT -->
+      <div id="smoochBanner" class="hidden absolute inset-x-0 top-3 flex justify-center z-20 pointer-events-none">
+        <button id="btnSmoochAction" class="pointer-events-auto smooch-pulse bg-[#ff2a85] text-white border-4 border-[#141210] rounded-2xl px-4 py-2 shadow-[0_6px_0_#141210] flex flex-col items-center">
+          <span class="font-arcade text-xs sm:text-sm text-[#ffbe3b] drop-shadow">💋 SMOOOCH TIME! 💋</span>
+          <span class="text-[11px] font-bold mt-0.5">MASH [SPACE] OR CLICK HERE! (<span id="smoochTimer">5.0</span>s)</span>
+        </button>
+      </div>
+
+      <!-- Interactive HTML5 Game Canvas -->
+      <canvas id="gameCanvas" class="block w-full h-full"></canvas>
+
+      <!-- Subtle CRT Scanlines -->
+      <div class="scanlines absolute inset-0"></div>
+
+      <!-- START SCREEN OVERLAY -->
+      <div id="startScreen" class="absolute inset-0 bg-[#141210]/85 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center z-30">
+        <div class="bg-[#e9dec8] border-4 border-[#e69d24] rounded-2xl p-4 sm:p-6 max-w-lg w-full shadow-[0_10px_0_#000]">
+          <div class="inline-block bg-[#a82b6e] text-white font-arcade text-[10px] px-3 py-1 rounded-full border-2 border-[#141210] mb-2">
+            RETRO BOTANICAL ARCADE
+          </div>
+          <h2 class="font-chia-logo text-3xl sm:text-5xl text-[#141210] tracking-tight">
+            GROW THE <span class="text-[#a82b6e]">GANGA GODDESS</span>
+          </h2>
+          <p class="text-xs sm:text-sm font-semibold text-[#3d352e] mt-1">
+            Tend to your terracotta Chia Pet! Keep her hydrated, trim wild sprouts, swat hungry bugs, and blow kisses for mega combos!
+          </p>
+
+          <!-- Quick Visual How-To Grid -->
+          <div class="grid grid-cols-2 gap-2 mt-4 text-left text-xs">
+            <div class="bg-[#f7f2e7] border-2 border-[#141210] rounded-xl p-2">
+              <div class="font-bold text-[#0e6ba8]">💧 [1] Holy Water</div>
+              <p class="text-[11px] text-stone-700">Hold click on tray/figurine to water. Don't flood!</p>
+            </div>
+            <div class="bg-[#f7f2e7] border-2 border-[#141210] rounded-xl p-2">
+              <div class="font-bold text-amber-700">☀️ [2] Sun Lamp</div>
+              <p class="text-[11px] text-stone-700">Boosts growth speed, but dries water faster.</p>
+            </div>
+            <div class="bg-[#f7f2e7] border-2 border-[#141210] rounded-xl p-2">
+              <div class="font-bold text-[#236b1e]">✂️ [3] Shears</div>
+              <p class="text-[11px] text-stone-700">Snip overgrown wild vines for combo points.</p>
+            </div>
+            <div class="bg-[#f7f2e7] border-2 border-[#141210] rounded-xl p-2">
+              <div class="font-bold text-[#a82b6e]">✨ [4] Swat / Mist</div>
+              <p class="text-[11px] text-stone-700">Zap aphids & clear mold spores before they eat!</p>
+            </div>
+          </div>
+
+          <button id="btnStartGame" class="arcade-btn mt-5 w-full bg-[#3ca335] text-white font-arcade text-sm sm:text-base py-3.5 px-6 rounded-xl uppercase tracking-wider">
+            ▶ START GROWING!
+          </button>
+        </div>
+      </div>
+
+      <!-- GAME OVER SCREEN OVERLAY -->
+      <div id="gameOverScreen" class="hidden absolute inset-0 bg-[#141210]/88 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center z-30">
+        <div class="bg-[#e9dec8] border-4 border-[#a82b6e] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-[0_10px_0_#000]">
+          <div class="font-arcade text-xs text-[#a82b6e] uppercase mb-1">CHIA VITALITY DEPLETED!</div>
+          <h2 class="font-chia-logo text-4xl sm:text-5xl text-[#141210]">GAME OVER</h2>
+          
+          <div class="bg-[#f7f2e7] border-2 border-[#141210] rounded-xl p-3 my-4 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase text-stone-600">Final Score</span>
+              <span id="finalScore" class="font-arcade text-base text-[#141210]">000000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase text-stone-600">Weeks Survived</span>
+              <span id="finalWeeks" class="font-arcade text-sm text-[#236b1e]">WEEK 1</span>
+            </div>
+            <div class="border-t border-stone-300 pt-2">
+              <div class="text-[10px] font-bold uppercase text-stone-500">Caretaker Rank</div>
+              <div id="finalRank" class="font-chia-logo text-2xl text-[#a82b6e] tracking-wide">NOVICE PLANTER</div>
+            </div>
+          </div>
+
+          <button id="btnRestartGame" class="arcade-btn w-full bg-[#e69d24] text-[#141210] font-arcade text-sm py-3.5 px-6 rounded-xl uppercase">
+            ↻ GROW AGAIN!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ARCADE TOOL DECK -->
+    <footer class="bg-[#141210] p-2.5 sm:p-3 border-t-4 border-[#a82b6e]">
+      <div class="grid grid-cols-4 gap-2 sm:gap-3">
+        <!-- Tool 1: Watering Can -->
+        <button id="toolWater" data-tool="water" class="arcade-btn active-tool bg-[#1d9bf0] text-white rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl">💧</span>
+            <span class="hidden sm:inline font-arcade text-[10px] bg-black/30 px-1.5 py-0.5 rounded">[1]</span>
+          </div>
+          <span class="font-bold text-[11px] sm:text-xs mt-1 uppercase">Holy Water</span>
+        </button>
+
+        <!-- Tool 2: Sun Lamp Toggle -->
+        <button id="toolSun" data-tool="sun" class="arcade-btn bg-[#e69d24] text-[#141210] rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl">☀️</span>
+            <span class="hidden sm:inline font-arcade text-[10px] bg-black/20 px-1.5 py-0.5 rounded">[2]</span>
+          </div>
+          <span id="btnSunText" class="font-bold text-[11px] sm:text-xs mt-1 uppercase">Sun: OFF</span>
+        </button>
+
+        <!-- Tool 3: Pruning Shears -->
+        <button id="toolShears" data-tool="shears" class="arcade-btn bg-[#3ca335] text-white rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl">✂️</span>
+            <span class="hidden sm:inline font-arcade text-[10px] bg-black/30 px-1.5 py-0.5 rounded">[3]</span>
+          </div>
+          <span class="font-bold text-[11px] sm:text-xs mt-1 uppercase">Trim Vines</span>
+        </button>
+
+        <!-- Tool 4: Holy Mist / Bug Zapper -->
+        <button id="toolMist" data-tool="mist" class="arcade-btn bg-[#a82b6e] text-white rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl">✨</span>
+            <span class="hidden sm:inline font-arcade text-[10px] bg-black/30 px-1.5 py-0.5 rounded">[4]</span>
+          </div>
+          <span class="font-bold text-[11px] sm:text-xs mt-1 uppercase">Holy Mist</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    /**
+     * CHIA PET: GANGA GODDESS - RETRO ARCADE ENGINE
+     * Self-contained Canvas Renderer, Game Loop, and Web Audio Synthesizer
+     */
+
+    // ==========================================
+    // 1. WEB AUDIO RETRO SOUND SYNTHESIZER
+    // ==========================================
+    class RetroAudio {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        return this.muted;
+      }
+
+      playTone(freq, type, duration, vol = 0.12, slideTo = null) {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+        }
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+      }
+
+      playWater() {
+        // Bubbly water drop arpeggio
+        const base = 320 + Math.random() * 180;
+        this.playTone(base, 'sine', 0.09, 0.08, base * 1.45);
+      }
+
+      playSnip() {
+        // Crisp shears snip
+        this.playTone(950, 'square', 0.05, 0.1, 280);
+        setTimeout(() => this.playTone(1250, 'triangle', 0.06, 0.1, 450), 35);
+      }
+
+      playSunToggle(isOn) {
+        if (isOn) {
+          this.playTone(440, 'triangle', 0.12, 0.12, 880);
+        } else {
+          this.playTone(660, 'triangle', 0.12, 0.1, 330);
+        }
+      }
+
+      playMistZap() {
+        this.playTone(720, 'sawtooth', 0.14, 0.11, 1440);
+        setTimeout(() => this.playTone(1080, 'sine', 0.18, 0.1, 1620), 60);
+      }
+
+      playSmooch() {
+        // Cute arcade kiss pop + chime
+        this.playTone(520, 'sine', 0.08, 0.14, 980);
+        setTimeout(() => this.playTone(1174.66, 'triangle', 0.14, 0.12, 1567.98), 45);
+      }
+
+      playWeekUp() {
+        // Retro fanfare arpeggio
+        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        notes.forEach((n, idx) => {
+          setTimeout(() => this.playTone(n, 'square', 0.16, 0.11), idx * 75);
+        });
+      }
+
+      playHurt() {
+        this.playTone(190, 'sawtooth', 0.18, 0.12, 95);
+      }
+
+      playGameOver() {
+        const notes = [392.00, 369.99, 349.23, 329.63, 261.63];
+        notes.forEach((n, idx) => {
+          setTimeout(() => this.playTone(n, 'sawtooth', 0.25, 0.13), idx * 160);
+        });
+      }
+    }
+
+    const sfx = new RetroAudio();
+
+    // ==========================================
+    // 2. GAME STATE & CONFIGURATION
+    // ==========================================
+    const QUOTES = [
+      "“come here king give me a big smoooch”",
+      "“Pour that Holy Ganges Water, baby!”",
+      "“My chia curls are looking fabulous!”",
+      "“Don't let these crusty bugs bite me!”",
+      "“Trim these wild vines, king!”",
+      "“Soak up that divine sunshine!”",
+      "“From the holiest source... we hope!”",
+      "“Ooh, that holy mist feels refreshing!”"
+    ];
+
+    const state = {
+      running: false,
+      gameOver: false,
+      score: 0,
+      highScore: parseInt(localStorage.getItem('chia_ganga_highscore') || '0', 10),
+      week: 1,
+      combo: 1,
+      comboTimer: 0,
+
+      // Core Meters (0 - 100)
+      growth: 0,
+      hydration: 65,
+      health: 100,
+
+      // Tools & Environment
+      activeTool: 'water', // 'water' | 'shears' | 'mist'
+      sunLampOn: false,
+      isPointerDown: false,
+      pointerX: 0,
+      pointerY: 0,
+
+      // Interactive Entities
+      sproutsHead: [],
+      sproutsBikini: [],
+      wildVines: [],
+      pests: [],
+      moldSpots: [],
+      particles: [],
+      floatingTexts: [],
+
+      // Special Events
+      smoochActive: false,
+      smoochTimer: 0,
+      smoochCooldown: 14,
+      quoteTimer: 4,
+      waterSoundTimer: 0,
+      hurtSoundTimer: 0,
+
+      // Animation timers
+      time: 0,
+      wobble: 0
+    };
+
+    // ==========================================
+    // 3. DOM REFERENCES & CANVAS SETUP
+    // ==========================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasWrapper = document.getElementById('canvasWrapper');
+
+    const ui = {
+      hudScore: document.getElementById('hudScore'),
+      hudHighScore: document.getElementById('hudHighScore'),
+      hudWeekBadge: document.getElementById('hudWeekBadge'),
+      barGrowth: document.getElementById('barGrowth'),
+      labelGrowth: document.getElementById('labelGrowth'),
+      barHydration: document.getElementById('barHydration'),
+      labelHydration: document.getElementById('labelHydration'),
+      titleHydration: document.getElementById('titleHydration'),
+      barHealth: document.getElementById('barHealth'),
+      labelHealth: document.getElementById('labelHealth'),
+      labelSunStatus: document.getElementById('labelSunStatus'),
+      labelCombo: document.getElementById('labelCombo'),
+      btnSunText: document.getElementById('btnSunText'),
+      speechBubble: document.getElementById('speechBubble'),
+      speechText: document.getElementById('speechText'),
+      smoochBanner: document.getElementById('smoochBanner'),
+      smoochTimer: document.getElementById('smoochTimer'),
+      startScreen: document.getElementById('startScreen'),
+      gameOverScreen: document.getElementById('gameOverScreen'),
+      finalScore: document.getElementById('finalScore'),
+      finalWeeks: document.getElementById('finalWeeks'),
+      finalRank: document.getElementById('finalRank')
+    };
+
+    ui.hudHighScore.textContent = String(state.highScore).padStart(6, '0');
+
+    function resizeCanvas() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      generateSproutAnchors();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    // ==========================================
+    // 4. CHARACTER GEOMETRY & SPROUT ANCHORS
+    // ==========================================
+    function getCharacterCenter() {
+      const w = canvasWrapper.clientWidth;
+      const h = canvasWrapper.clientHeight;
+      return {
+        cx: w * 0.5,
+        cy: h * 0.54,
+        scale: Math.min(w / 460, h / 410)
+      };
+    }
+
+    function generateSproutAnchors() {
+      state.sproutsHead = [];
+      state.sproutsBikini = [];
+
+      // Head Afro Chia Cluster (Dense dome around top of head)
+      for (let i = 0; i < 85; i++) {
+        const angle = Math.PI + (Math.random() * Math.PI); // Top semicircle
+        const radiusX = 34 + Math.random() * 16;
+        const radiusY = 24 + Math.random() * 14;
+        const ox = Math.cos(angle) * radiusX + (Math.random() - 0.5) * 14;
+        const oy = Math.sin(angle) * radiusY - 82 + (Math.random() - 0.5) * 10;
+        state.sproutsHead.push({
+          ox,
+          oy,
+          seed: Math.random() * Math.PI * 2,
+          leafScale: 0.75 + Math.random() * 0.55,
+          hasFlower: Math.random() < 0.18
+        });
+      }
+
+      // Lower Bikini V-Patch Chia Cluster
+      for (let i = 0; i < 42; i++) {
+        const row = Math.random(); // 0 at top waistband, 1 at bottom tip
+        const maxWidth = (1 - row * 0.82) * 32;
+        const ox = (Math.random() - 0.5) * 2 * maxWidth;
+        const oy = 46 + row * 28;
+        state.sproutsBikini.push({
+          ox,
+          oy,
+          seed: Math.random() * Math.PI * 2,
+          leafScale: 0.7 + Math.random() * 0.5,
+          hasFlower: Math.random() < 0.15
+        });
+      }
+    }
+
+    // ==========================================
+    // 5. PARTICLE & POPUP HELPERS
+    // ==========================================
+    function spawnParticles(x, y, color, count = 8, speed = 90, shape = 'circle') {
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = (0.3 + Math.random() * 0.7) * speed;
+        state.particles.push({
+          x,
+          y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd - 25,
+          life: 0.45 + Math.random() * 0.35,
+          maxLife: 0.8,
+          size: 3 + Math.random() * 4,
+          color,
+          shape
+        });
+      }
+    }
+
+    function spawnFloatingText(x, y, text, color = '#141210') {
+      state.floatingTexts.push({
+        x,
+        y,
+        text,
+        color,
+        life: 1.0
+      });
+    }
+
+    function addScore(points, x = null, y = null, label = null) {
+      const gained = Math.round(points * state.combo);
+      state.score += gained;
+      if (state.score > state.highScore) {
+        state.highScore = state.score;
+        localStorage.setItem('chia_ganga_highscore', String(state.highScore));
+      }
+      if (x !== null && y !== null) {
+        spawnFloatingText(x, y, label || `+${gained}`, '#236b1e');
+      }
+    }
+
+    function bumpCombo() {
+      state.combo = Math.min(10, state.combo + 1);
+      state.comboTimer = 4.5;
+    }
+
+    function triggerSpeechBubble(customText = null) {
+      const text = customText || QUOTES[Math.floor(Math.random() * QUOTES.length)];
+      ui.speechText.textContent = text;
+      ui.speechBubble.classList.remove('hidden', 'speech-bubble-anim');
+      void ui.speechBubble.offsetWidth; // Force reflow to restart animation
+      ui.speechBubble.classList.add('speech-bubble-anim');
+      state.quoteTimer = 7 + Math.random() * 4;
+    }
+
+    // ==========================================
+    // 6. GAMEPLAY ACTIONS & EVENT HANDLERS
+    // ==========================================
+    function selectTool(toolName) {
+      if (toolName === 'sun') {
+        state.sunLampOn = !state.sunLampOn;
+        sfx.playSunToggle(state.sunLampOn);
+        ui.btnSunText.textContent = state.sunLampOn ? 'Sun: ON' : 'Sun: OFF';
+        ui.labelSunStatus.textContent = state.sunLampOn ? 'ON (+2x)' : 'OFF';
+        ui.labelSunStatus.className = state.sunLampOn
+          ? 'font-arcade text-[9px] text-amber-600 font-bold mt-0.5'
+          : 'font-arcade text-[9px] text-stone-500 mt-0.5';
+        const btnSun = document.getElementById('toolSun');
+        if (state.sunLampOn) {
+          btnSun.classList.add('ring-4', 'ring-amber-300');
+        } else {
+          btnSun.classList.remove('ring-4', 'ring-amber-300');
+        }
+        return;
+      }
+
+      state.activeTool = toolName;
+      document.querySelectorAll('[data-tool]').forEach(btn => {
+        if (btn.dataset.tool === toolName) {
+          btn.classList.add('active-tool');
+        } else if (btn.dataset.tool !== 'sun') {
+          btn.classList.remove('active-tool');
+        }
+      });
+    }
+
+    function triggerSmoochBonus() {
+      state.smoochActive = true;
+      state.smoochTimer = 5.0;
+      ui.smoochBanner.classList.remove('hidden');
+      triggerSpeechBubble("“come here king give me a big smoooch!”");
+      sfx.playSmooch();
+    }
+
+    function performSmoochKiss() {
+      if (!state.running || !state.smoochActive) return;
+      const { cx, cy, scale } = getCharacterCenter();
+      sfx.playSmooch();
+      bumpCombo();
+      addScore(35, cx + (Math.random() - 0.5) * 60, cy - 75 * scale, `💋 +${35 * state.combo}`);
+      spawnParticles(cx, cy - 68 * scale, '#ff2a85', 6, 110, 'heart');
+      state.wobble = 0.22;
+    }
+
+    function applyHolyMist(x, y) {
+      sfx.playMistZap();
+      spawnParticles(x, y, '#ff77c2', 14, 130, 'circle');
+      spawnParticles(x, y, '#38bdf8', 10, 100, 'circle');
+
+      let clearedCount = 0;
+
+      // Clear nearby pests
+      for (let i = state.pests.length - 1; i >= 0; i--) {
+        const p = state.pests[i];
+        const dist = Math.hypot(p.x - x, p.y - y);
+        if (dist < 75) {
+          spawnParticles(p.x, p.y, '#ef4444', 8, 95);
+          state.pests.splice(i, 1);
+          clearedCount++;
+        }
+      }
+
+      // Clear nearby mold spots
+      for (let i = state.moldSpots.length - 1; i >= 0; i--) {
+        const m = state.moldSpots[i];
+        const dist = Math.hypot(m.x - x, m.y - y);
+        if (dist < 85) {
+          spawnParticles(m.x, m.y, '#a3e635', 8, 80);
+          state.moldSpots.splice(i, 1);
+          clearedCount++;
+        }
+      }
+
+      if (clearedCount > 0) {
+        bumpCombo();
+        addScore(60 * clearedCount, x, y - 15, `PURIFIED! +${60 * clearedCount * state.combo}`);
+        state.wobble = 0.15;
+      } else {
+        spawnFloatingText(x, y - 10, '✨ HOLY MIST', '#a82b6e');
+      }
+    }
+
+    function handleCanvasInteraction(x, y, isClick = false) {
+      if (!state.running) return;
+
+      // Direct swatting of bugs on click regardless of active tool (arcade responsiveness!)
+      if (isClick) {
+        for (let i = state.pests.length - 1; i >= 0; i--) {
+          const p = state.pests[i];
+          if (Math.hypot(p.x - x, p.y - y) < 34) {
+            state.pests.splice(i, 1);
+            sfx.playMistZap();
+            bumpCombo();
+            addScore(50, x, y - 10, `BUG SWATTED! +${50 * state.combo}`);
+            spawnParticles(x, y, '#facc15', 10, 110);
+            state.wobble = 0.12;
+            return;
+          }
+        }
+      }
+
+      if (state.activeTool === 'shears' && isClick) {
+        sfx.playSnip();
+        spawnParticles(x, y, '#4ade80', 8, 85, 'leaf');
+
+        let trimmed = 0;
+        for (let i = state.wildVines.length - 1; i >= 0; i--) {
+          const v = state.wildVines[i];
+          if (Math.hypot(v.tipX - x, v.tipY - y) < 42 || Math.hypot(v.baseX - x, v.baseY - y) < 36) {
+            spawnParticles(v.tipX, v.tipY, '#22c55e', 10, 100, 'leaf');
+            state.wildVines.splice(i, 1);
+            trimmed++;
+          }
+        }
+
+        if (trimmed > 0) {
+          bumpCombo();
+          addScore(75 * trimmed, x, y - 15, `FRESH TRIM! +${75 * trimmed * state.combo}`);
+          state.growth = Math.min(100, state.growth + 2.5 * trimmed);
+          state.wobble = 0.18;
+        }
+      } else if (state.activeTool === 'mist' && isClick) {
+        applyHolyMist(x, y);
+      }
+    }
+
+    // Pointer Events on Canvas
+    function updatePointerCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      state.pointerX = clientX - rect.left;
+      state.pointerY = clientY - rect.top;
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      updatePointerCoords(e);
+      state.isPointerDown = true;
+      handleCanvasInteraction(state.pointerX, state.pointerY, true);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      updatePointerCoords(e);
+    });
+
+    window.addEventListener('mouseup', () => {
+      state.isPointerDown = false;
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      updatePointerCoords(e);
+      state.isPointerDown = true;
+      handleCanvasInteraction(state.pointerX, state.pointerY, true);
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      updatePointerCoords(e);
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+      state.isPointerDown = false;
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '1') selectTool('water');
+      if (e.key === '2') selectTool('sun');
+      if (e.key === '3') selectTool('shears');
+      if (e.key === '4') selectTool('mist');
+      if (e.code === 'Space') {
+        if (state.smoochActive) {
+          e.preventDefault();
+          performSmoochKiss();
+        }
+      }
+    });
+
+    // Toolbar Button Listeners
+    document.querySelectorAll('[data-tool]').forEach(btn => {
+      btn.addEventListener('click', () => selectTool(btn.dataset.tool));
+    });
+
+    document.getElementById('btnSmoochAction').addEventListener('click', performSmoochKiss);
+
+    document.getElementById('btnSound').addEventListener('click', () => {
+      const isMuted = sfx.toggleMute();
+      document.getElementById('soundIcon').textContent = isMuted ? '🔇' : '🔊';
+    });
+
+    // ==========================================
+    // 7. START / RESET / ADVANCE WEEK LOGIC
+    // ==========================================
+    function startGame() {
+      sfx.init();
+      state.running = true;
+      state.gameOver = false;
+      state.score = 0;
+      state.week = 1;
+      state.combo = 1;
+      state.comboTimer = 0;
+      state.growth = 8;
+      state.hydration = 68;
+      state.health = 100;
+      state.sunLampOn = false;
+      state.wildVines = [];
+      state.pests = [];
+      state.moldSpots = [];
+      state.particles = [];
+      state.floatingTexts = [];
+      state.smoochActive = false;
+      state.smoochCooldown = 11;
+
+      selectTool('water');
+      ui.btnSunText.textContent = 'Sun: OFF';
+      ui.labelSunStatus.textContent = 'OFF';
+      ui.smoochBanner.classList.add('hidden');
+      ui.startScreen.classList.add('hidden');
+      ui.gameOverScreen.classList.add('hidden');
+
+      resizeCanvas();
+      triggerSpeechBubble("“come here king give me a big smoooch!”");
+      sfx.playWeekUp();
+    }
+
+    function advanceWeek() {
+      state.week += 1;
+      state.growth = 5;
+      state.health = Math.min(100, state.health + 25);
+      state.wildVines = [];
+      bumpCombo();
+      const { cx, cy } = getCharacterCenter();
+      addScore(500 * state.week, cx, cy - 110, `🌟 WEEK ${state.week} CLEAR! +${500 * state.week * state.combo}`);
+      sfx.playWeekUp();
+      triggerSpeechBubble(`“Week ${state.week}! Look how lush I'm growing, king!”`);
+      spawnParticles(cx, cy - 40, '#ffbe3b', 28, 170, 'heart');
+    }
+
+    function endGame() {
+      state.running = false;
+      state.gameOver = true;
+      sfx.playGameOver();
+
+      ui.finalScore.textContent = String(state.score).padStart(6, '0');
+      ui.finalWeeks.textContent = `WEEK ${state.week}`;
+
+      let rank = 'NOVICE PLANTER';
+      if (state.score >= 12000) rank = 'SUPREME GANGA DEITY';
+      else if (state.score >= 6500) rank = 'HOLY SPROUT MASTER';
+      else if (state.score >= 2500) rank = 'CHIA CARETAKER';
+      ui.finalRank.textContent = rank;
+
+      ui.gameOverScreen.classList.remove('hidden');
+    }
+
+    document.getElementById('btnStartGame').addEventListener('click', startGame);
+    document.getElementById('btnRestartGame').addEventListener('click', startGame);
+
+    // ==========================================
+    // 8. SPAWNERS & SIMULATION UPDATE LOOP
+    // ==========================================
+    function spawnWildVine() {
+      const { cx, cy, scale } = getCharacterCenter();
+      const isHead = Math.random() < 0.72;
+      let baseX, baseY, angle;
+
+      if (isHead) {
+        angle = -Math.PI * (0.15 + Math.random() * 0.7);
+        baseX = cx + Math.cos(angle) * 38 * scale;
+        baseY = cy + (Math.sin(angle) * 28 - 84) * scale;
+      } else {
+        angle = Math.PI * (0.35 + Math.random() * 0.3);
+        baseX = cx + (Math.random() - 0.5) * 36 * scale;
+        baseY = cy + 62 * scale;
+      }
+
+      const len = (28 + Math.random() * 20) * scale;
+      state.wildVines.push({
+        baseX,
+        baseY,
+        angle,
+        len,
+        tipX: baseX + Math.cos(angle) * len,
+        tipY: baseY + Math.sin(angle) * len,
+        swaySeed: Math.random() * Math.PI * 2
+      });
+    }
+
+    function spawnPest() {
+      const w = canvasWrapper.clientWidth;
+      const h = canvasWrapper.clientHeight;
+      const { cx, cy, scale } = getCharacterCenter();
+      const fromLeft = Math.random() < 0.5;
+      const targetHead = Math.random() < 0.7;
+
+      state.pests.push({
+        x: fromLeft ? -20 : w + 20,
+        y: 40 + Math.random() * (h * 0.6),
+        targetX: cx + (Math.random() - 0.5) * 55 * scale,
+        targetY: targetHead ? cy - 82 * scale : cy + 52 * scale,
+        speed: (55 + state.week * 12) * (0.85 + Math.random() * 0.3),
+        wingPhase: Math.random() * 10
+      });
+    }
+
+    function spawnMoldSpot() {
+      const { cx, cy, scale } = getCharacterCenter();
+      state.moldSpots.push({
+        x: cx + (Math.random() - 0.5) * 75 * scale,
+        y: cy + (-20 + Math.random() * 85) * scale,
+        radius: 10 + Math.random() * 8
+      });
+    }
+
+    function updateSimulation(dt) {
+      state.time += dt;
+      if (state.wobble > 0) {
+        state.wobble = Math.max(0, state.wobble - dt * 1.4);
+      }
+
+      if (!state.running) return;
+
+      const difficultyMult = 1 + (state.week - 1) * 0.18;
+
+      // Combo decay
+      if (state.combo > 1) {
+        state.comboTimer -= dt;
+        if (state.comboTimer <= 0) {
+          state.combo = 1;
+        }
+      }
+
+      // Speech bubble timer
+      state.quoteTimer -= dt;
+      if (state.quoteTimer <= 0) {
+        triggerSpeechBubble();
+      }
+
+      // Smooch Bonus Event Logic
+      if (state.smoochActive) {
+        state.smoochTimer -= dt;
+        ui.smoochTimer.textContent = Math.max(0, state.smoochTimer).toFixed(1);
+        if (state.smoochTimer <= 0) {
+          state.smoochActive = false;
+          ui.smoochBanner.classList.add('hidden');
+          state.smoochCooldown = 14 + Math.random() * 6;
+        }
+      } else if (state.health > 55) {
+        state.smoochCooldown -= dt;
+        if (state.smoochCooldown <= 0) {
+          triggerSmoochBonus();
+        }
+      }
+
+      // Active Water Pouring (Hold pointer with Watering Can tool)
+      if (state.isPointerDown && state.activeTool === 'water') {
+        state.hydration = Math.min(100, state.hydration + 32 * dt);
+        state.waterSoundTimer -= dt;
+        if (state.waterSoundTimer <= 0) {
+          sfx.playWater();
+          state.waterSoundTimer = 0.11;
+        }
+        if (Math.random() < 0.75) {
+          spawnParticles(state.pointerX, state.pointerY, '#38bdf8', 2, 75, 'drop');
+        }
+      }
+
+      // Hydration Evaporation
+      const evapRate = (state.sunLampOn ? 7.8 : 4.2) * difficultyMult;
+      state.hydration = Math.max(0, state.hydration - evapRate * dt);
+
+      // Growth & Health Calculation based on Hydration & Sun
+      const isOptimalWater = state.hydration >= 35 && state.hydration <= 82;
+      const isFlooded = state.hydration > 85;
+      const isDry = state.hydration < 22;
+
+      if (isOptimalWater) {
+        const sunBonus = state.sunLampOn ? 1.85 : 1.0;
+        const vinePenalty = Math.max(0.35, 1 - state.wildVines.length * 0.12);
+        const growthGain = (5.4 * sunBonus * vinePenalty) * dt;
+        state.growth += growthGain;
+        state.health = Math.min(100, state.health + 2.2 * dt);
+
+        if (Math.random() < dt * 2.5) {
+          addScore(5);
+        }
+      } else if (isFlooded) {
+        // Overwatered slows growth & risks mold
+        state.growth += 1.2 * dt;
+        if (state.moldSpots.length < 4 && Math.random() < dt * 0.45 * difficultyMult) {
+          spawnMoldSpot();
+        }
+      } else if (isDry) {
+        // Wilting damage
+        const dryDamage = (state.sunLampOn ? 8.5 : 4.8) * dt;
+        state.health -= dryDamage;
+        state.hurtSoundTimer -= dt;
+        if (state.hurtSoundTimer <= 0) {
+          sfx.playHurt();
+          state.hurtSoundTimer = 1.2;
+        }
+      }
+
+      // Spawn Wild Vines when sprouts are growing
+      if (state.growth > 25 && state.wildVines.length < 6 && Math.random() < dt * 0.48 * difficultyMult) {
+        spawnWildVine();
+      }
+
+      // Spawn Aphid Bugs
+      if (state.pests.length < 4 && Math.random() < dt * 0.42 * difficultyMult) {
+        spawnPest();
+      }
+
+      // Update Pests
+      for (let i = state.pests.length - 1; i >= 0; i--) {
+        const p = state.pests[i];
+        p.wingPhase += dt * 28;
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > 8) {
+          p.x += (dx / dist) * p.speed * dt;
+          p.y += (dy / dist) * p.speed * dt;
+        } else {
+          // Munching on Chia sprouts!
+          p.x += Math.sin(state.time * 12 + i) * 14 * dt;
+          state.health -= 4.2 * difficultyMult * dt;
+          state.growth = Math.max(0, state.growth - 1.5 * dt);
+        }
+      }
+
+      // Mold Damage
+      if (state.moldSpots.length > 0) {
+        state.health -= state.moldSpots.length * 1.9 * dt;
+      }
+
+      // Update Particles
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const pt = state.particles[i];
+        pt.x += pt.vx * dt;
+        pt.y += pt.vy * dt;
+        pt.vy += 180 * dt; // Gravity
+        pt.life -= dt;
+        if (pt.life <= 0) state.particles.splice(i, 1);
+      }
+
+      // Update Floating Texts
+      for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+        const ft = state.floatingTexts[i];
+        ft.y -= 36 * dt;
+        ft.life -= dt;
+        if (ft.life <= 0) state.floatingTexts.splice(i, 1);
+      }
+
+      // Check Week Completion
+      if (state.growth >= 100) {
+        advanceWeek();
+      }
+
+      // Check Game Over
+      if (state.health <= 0) {
+        state.health = 0;
+        endGame();
+      }
+
+      syncHUD();
+    }
+
+    function syncHUD() {
+      ui.hudScore.textContent = String(state.score).padStart(6, '0');
+      ui.hudHighScore.textContent = String(state.highScore).padStart(6, '0');
+      ui.hudWeekBadge.textContent = `WEEK ${state.week}`;
+
+      const gPct = Math.min(100, Math.round(state.growth));
+      ui.barGrowth.style.width = `${gPct}%`;
+      ui.labelGrowth.textContent = `${gPct}%`;
+
+      const hPct = Math.round(state.hydration);
+      ui.barHydration.style.width = `${hPct}%`;
+      ui.labelHydration.textContent = `${hPct}%`;
+
+      if (hPct > 85) {
+        ui.barHydration.style.backgroundColor = '#6366f1';
+        ui.titleHydration.textContent = '🌊 FLOODED!';
+      } else if (hPct < 22) {
+        ui.barHydration.style.backgroundColor = '#ef4444';
+        ui.titleHydration.textContent = '🏜️ DRYING!';
+      } else {
+        ui.barHydration.style.backgroundColor = '#1d9bf0';
+        ui.titleHydration.textContent = '💧 Holy Water';
+      }
+
+      const hpPct = Math.max(0, Math.round(state.health));
+      ui.barHealth.style.width = `${hpPct}%`;
+      ui.labelHealth.textContent = `${hpPct}%`;
+      ui.barHealth.style.backgroundColor = hpPct < 30 ? '#ef4444' : '#d9387a';
+
+      ui.labelCombo.textContent = `x${state.combo}`;
+    }
+
+    // ==========================================
+    // 9. CUSTOM CANVAS RENDERER (GANGA GODDESS)
+    // ==========================================
+    function drawSunLampBeams(w, h, cx) {
+      if (!state.sunLampOn) return;
+      ctx.save();
+      const grad = ctx.createLinearGradient(cx, 0, cx, h * 0.85);
+      grad.addColorStop(0, 'rgba(255, 215, 64, 0.42)');
+      grad.addColorStop(1, 'rgba(255, 215, 64, 0.0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(cx - 55, 0);
+      ctx.lineTo(cx + 55, 0);
+      ctx.lineTo(cx + 210, h * 0.9);
+      ctx.lineTo(cx - 210, h * 0.9);
+      ctx.closePath();
+      ctx.fill();
+
+      // Retro Sun Lamp Fixture at Top Center
+      ctx.fillStyle = '#141210';
+      ctx.beginPath();
+      ctx.arc(cx, 6, 36, 0, Math.PI);
+      ctx.fill();
+      ctx.fillStyle = '#ffbe3b';
+      ctx.beginPath();
+      ctx.arc(cx, 12, 24, 0, Math.PI);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawGangaGoddess(cx, cy, scale) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      const sway = Math.sin(state.time * 4) * state.wobble * 0.15;
+      ctx.rotate(sway);
+      ctx.scale(scale, scale);
+
+      // Ground Drop Shadow
+      ctx.fillStyle = 'rgba(20, 18, 16, 0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 134, 118, 22, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // --- 1. BACK OF TERRACOTTA WATER TRAY ---
+      ctx.fillStyle = '#7c3416';
+      ctx.strokeStyle = '#141210';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.roundRect(-105, 86, 210, 44, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Holy Water Level inside Tray
+      const waterFill = Math.max(0.05, state.hydration / 100);
+      const waterY = 112 - waterFill * 16;
+      ctx.fillStyle = state.hydration > 85 ? 'rgba(56, 189, 248, 0.85)' : 'rgba(14, 165, 233, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(0, waterY + 6, 94, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Water Ripples
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.lineWidth = 1.5;
+      const rip = Math.sin(state.time * 5) * 4;
+      ctx.beginPath();
+      ctx.ellipse(0, waterY + 6, 62 + rip, 7, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // --- 2. TERRACOTTA CLAY BODY (GANGA GODDESS) ---
+      const clayGrad = ctx.createLinearGradient(-65, -70, 65, 110);
+      clayGrad.addColorStop(0, '#964b25');
+      clayGrad.addColorStop(0.5, '#7c3a19');
+      clayGrad.addColorStop(1, '#58260e');
+
+      ctx.fillStyle = clayGrad;
+      ctx.strokeStyle = '#141210';
+      ctx.lineWidth = 3.5;
+
+      // Left & Right Arms
+      ctx.beginPath();
+      ctx.ellipse(-64, 12, 16, 46, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(64, 12, 16, 46, -0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Sturdy Legs standing in tray
+      ctx.beginPath();
+      ctx.roundRect(-42, 58, 38, 54, 12);
+      ctx.roundRect(4, 58, 38, 54, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      // Full-figured Torso & Belly
+      ctx.beginPath();
+      ctx.ellipse(0, 18, 58, 64, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Terracotta Clay Texture Speckles
+      ctx.fillStyle = 'rgba(42, 17, 5, 0.25)';
+      for (let i = 0; i < 24; i++) {
+        const sx = Math.sin(i * 19.3) * 44;
+        const sy = Math.cos(i * 11.7) * 48 + 16;
+        ctx.fillRect(sx, sy, 2.5, 2.5);
+      }
+
+      // Belly Button & Torso Contour
+      ctx.strokeStyle = '#4a1f0b';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(0, 32, 3.5, 0, Math.PI);
+      ctx.stroke();
+
+      // --- 3. YELLOW BIKINI ---
+      ctx.strokeStyle = '#f2c922';
+      ctx.lineWidth = 3;
+      // Neck strap
+      ctx.beginPath();
+      ctx.moveTo(-26, -12);
+      ctx.lineTo(-4, -46);
+      ctx.moveTo(26, -12);
+      ctx.lineTo(4, -46);
+      ctx.stroke();
+
+      // Bikini Top Triangles
+      ctx.fillStyle = '#f5cf27';
+      ctx.strokeStyle = '#141210';
+      ctx.lineWidth = 2.5;
+      // Left cup
+      ctx.beginPath();
+      ctx.moveTo(-26, -18);
+      ctx.lineTo(-44, 6);
+      ctx.lineTo(-8, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      // Right cup
+      ctx.beginPath();
+      ctx.moveTo(26, -18);
+      ctx.lineTo(8, 6);
+      ctx.lineTo(44, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Bikini Bottom Strap
+      ctx.strokeStyle = '#f5cf27';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-50, 42);
+      ctx.quadraticCurveTo(0, 56, 50, 42);
+      ctx.stroke();
+
+      // --- 4. HEAD & FACIAL EXPRESSION ---
+      ctx.fillStyle = '#8b421e';
+      ctx.strokeStyle = '#141210';
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.ellipse(0, -64, 29, 32, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Expressive Brows & Eyes
+      ctx.strokeStyle = '#291105';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      // Furrowed brows
+      ctx.moveTo(-16, -71);
+      ctx.lineTo(-5, -68);
+      ctx.moveTo(16, -71);
+      ctx.lineTo(5, -68);
+      ctx.stroke();
+
+      // Eyes
+      ctx.fillStyle = '#141210';
+      ctx.beginPath();
+      ctx.arc(-10, -64, 2.5, 0, Math.PI * 2);
+      ctx.arc(10, -64, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nose
+      ctx.beginPath();
+      ctx.arc(0, -58, 3.2, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.stroke();
+
+      // Lips (Puckered Smooch Lips during Smooch Event!)
+      if (state.smoochActive) {
+        ctx.fillStyle = '#ff2a85';
+        ctx.beginPath();
+        ctx.arc(0, -49, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = '#3b1707';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-8, -49);
+        ctx.quadraticCurveTo(0, -52, 8, -49);
+        ctx.stroke();
+      }
+
+      // --- 5. FRONT RIM OF TERRACOTTA TRAY ---
+      const trayFrontGrad = ctx.createLinearGradient(0, 96, 0, 134);
+      trayFrontGrad.addColorStop(0, '#b5562d');
+      trayFrontGrad.addColorStop(1, '#7a3315');
+      ctx.fillStyle = trayFrontGrad;
+      ctx.strokeStyle = '#141210';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.roundRect(-108, 102, 216, 30, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      // --- 6. DYNAMIC CHIA SPROUTS (HEAD AFRO & LOWER BIKINI) ---
+      const gFactor = Math.min(1, state.growth / 100);
+      if (gFactor > 0.03) {
+        const allSprouts = [...state.sproutsHead, ...state.sproutsBikini];
+        allSprouts.forEach((sp, idx) => {
+          // Reveal sprouts progressively as growth increases
+          const threshold = (idx % 10) * 0.08;
+          if (gFactor < threshold) return;
+
+          const localGrow = Math.min(1, (gFactor - threshold) / (1 - threshold));
+          const r = (3.5 + localGrow * 6.5) * sp.leafScale;
+          const swayX = Math.sin(state.time * 3 + sp.seed) * 1.5;
+
+          // Stem / Leaf Cluster
+          ctx.fillStyle = localGrow > 0.5 ? '#2d8a27' : '#5bb83b';
+          ctx.beginPath();
+          ctx.arc(sp.ox + swayX, sp.oy, r, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Bright Chia Leaf Highlight
+          ctx.fillStyle = '#7be346';
+          ctx.beginPath();
+          ctx.arc(sp.ox + swayX - r * 0.25, sp.oy - r * 0.25, r * 0.52, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Blooming Golden/Magenta Flowers near 80%+ Growth
+          if (gFactor > 0.78 && sp.hasFlower) {
+            ctx.fillStyle = idx % 2 === 0 ? '#ffbe3b' : '#ff5ca8';
+            ctx.beginPath();
+            ctx.arc(sp.ox + swayX, sp.oy - r * 0.4, 3.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+      }
+
+      ctx.restore();
+    }
+
+    function drawWildVines() {
+      state.wildVines.forEach(v => {
+        const sway = Math.sin(state.time * 4.5 + v.swaySeed) * 6;
+        const tx = v.tipX + sway;
+        const ty = v.tipY;
+
+        ctx.save();
+        ctx.strokeStyle = '#141210';
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(v.baseX, v.baseY);
+        ctx.quadraticCurveTo((v.baseX + tx) / 2 - 8, (v.baseY + ty) / 2, tx, ty);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#65a30d';
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+
+        // Leaf tip target indicator
+        ctx.fillStyle = '#a3e635';
+        ctx.strokeStyle = '#141210';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    function drawPestsAndMold() {
+      // Mold Spots
+      state.moldSpots.forEach(m => {
+        ctx.save();
+        ctx.fillStyle = 'rgba(132, 204, 22, 0.75)';
+        ctx.strokeStyle = '#365314';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.radius + Math.sin(state.time * 6) * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Hungry Aphid Bugs
+      state.pests.forEach(p => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        const wingFlap = Math.sin(p.wingPhase) * 6;
+
+        // Wings
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.strokeStyle = '#141210';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(-5, -6 + wingFlap * 0.3, 7, 4, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(5, -6 - wingFlap * 0.3, 7, 4, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Bug Body
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(0, 0, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Angry Eyes
+        ctx.fillStyle = '#ffbe3b';
+        ctx.fillRect(-4, -3, 3, 3);
+        ctx.fillRect(1, -3, 3, 3);
+        ctx.restore();
+      });
+    }
+
+    function drawParticlesAndPopups() {
+      // Particles
+      state.particles.forEach(pt => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+        ctx.fillStyle = pt.color;
+        if (pt.shape === 'heart') {
+          ctx.font = '16px sans-serif';
+          ctx.fillText('💋', pt.x - 8, pt.y);
+        } else {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // Floating Score Popups
+      state.floatingTexts.forEach(ft => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, ft.life);
+        ctx.font = 'bold 13px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.strokeText(ft.text, ft.x, ft.y);
+        ctx.fillStyle = ft.color;
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
+      });
+    }
+
+    function drawToolCursorIndicator() {
+      if (!state.running || state.pointerX === 0) return;
+      const icons = { water: '💧', shears: '✂️', mist: '✨' };
+      const icon = icons[state.activeTool];
+      if (!icon) return;
+
+      ctx.save();
+      ctx.font = '22px sans-serif';
+      ctx.fillText(icon, state.pointerX + 8, state.pointerY - 8);
+      ctx.restore();
+    }
+
+    function renderFrame() {
+      const w = canvasWrapper.clientWidth;
+      const h = canvasWrapper.clientHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      const { cx, cy, scale } = getCharacterCenter();
+
+      // Sun lamp light cone behind character
+      drawSunLampBeams(w, h, cx);
+
+      // Ganga Goddess Figurine + Terracotta Tray + Growing Sprouts
+      drawGangaGoddess(cx, cy, scale);
+
+      // Overgrown Wild Vines
+      drawWildVines();
+
+      // Pests & Mold Hazards
+      drawPestsAndMold();
+
+      // Particles & Floating Arcade Text
+      drawParticlesAndPopups();
+
+      // Custom Tool Cursor Badge
+      drawToolCursorIndicator();
+    }
+
+    // ==========================================
+    // 10. MAIN ANIMATION LOOP
+    // ==========================================
+    let lastTimestamp = 0;
+    function gameLoop(timestamp) {
+      const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000 || 0.016);
+      lastTimestamp = timestamp;
+
+      updateSimulation(dt);
+      renderFrame();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.onload = function () {
+      resizeCanvas();
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>
